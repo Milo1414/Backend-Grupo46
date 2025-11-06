@@ -1,0 +1,24 @@
+package tpi_grupo46.recursos.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class TarifaRangoDTO {
+
+    private Integer idTarifaRango;
+    private BigDecimal minPesoKg;
+    private BigDecimal maxPesoKg;
+    private BigDecimal minVolumenM3;
+    private BigDecimal maxVolumenM3;
+    private BigDecimal factorCamion;
+    private Integer idTarifa;
+
+}
