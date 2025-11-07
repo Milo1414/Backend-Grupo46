@@ -94,7 +94,7 @@ public class TramoController {
    * @param asignarCamionDTO Datos validados de asignación (camionId)
    * @return TramoDTO actualizado
    */
-  @PutMapping("/{id}/asignar-camion")
+  @PutMapping("/{id}/camion")
   @Operation(summary = "Asignar camión a tramo", description = "Asigna un camión específico a un tramo de ruta")
   @ApiResponse(responseCode = "200", description = "Camión asignado exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TramoDTO.class)))
   @ApiResponse(responseCode = "404", description = "Tramo no encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
@@ -114,7 +114,7 @@ public class TramoController {
    * @param inicioDTO Datos validados de inicio (fecha y hora)
    * @return TramoDTO actualizado
    */
-  @PutMapping("/{id}/iniciar")
+  @PutMapping("/{id}/inicio")
   @Operation(summary = "Iniciar tramo", description = "Registra el inicio del recorrido de un tramo")
   @ApiResponse(responseCode = "200", description = "Tramo iniciado exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TramoDTO.class)))
   @ApiResponse(responseCode = "404", description = "Tramo no encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
@@ -134,7 +134,7 @@ public class TramoController {
    * @param finDTO Datos validados de finalización (fecha/hora final y costo real)
    * @return TramoDTO actualizado
    */
-  @PutMapping("/{id}/finalizar")
+  @PutMapping("/{id}/fin")
   @Operation(summary = "Finalizar tramo", description = "Registra el fin del recorrido de un tramo incluyendo datos reales de costo")
   @ApiResponse(responseCode = "200", description = "Tramo finalizado exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TramoDTO.class)))
   @ApiResponse(responseCode = "404", description = "Tramo no encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
@@ -144,5 +144,43 @@ public class TramoController {
       @Valid @RequestBody FinTramoDTO finDTO) {
     var tramoActualizado = tramoService.finalizarTramo(id, finDTO.fechaHoraFin(), finDTO.costoReal());
     return ResponseEntity.ok(mapper.tramoToDto(tramoActualizado));
+  }
+
+  // ============================================================================
+  // ENDPOINTS LEGACY (DEPRECATED) - Mantener para compatibilidad hacia atrás
+  // TODO: Eliminar en versión 2.0
+  // ============================================================================
+
+  /**
+   * @deprecated Usar PUT /api/v1/tramos/{id}/camion
+   */
+  @PutMapping("/{id}/asignar-camion")
+  @Deprecated(forRemoval = true)
+  public ResponseEntity<TramoDTO> asignarCamionLegacy(
+      @PathVariable Long id,
+      @Valid @RequestBody AsignarCamionDTO asignarCamionDTO) {
+    return asignarCamion(id, asignarCamionDTO);
+  }
+
+  /**
+   * @deprecated Usar PUT /api/v1/tramos/{id}/inicio
+   */
+  @PutMapping("/{id}/iniciar")
+  @Deprecated(forRemoval = true)
+  public ResponseEntity<TramoDTO> iniciarTramoLegacy(
+      @PathVariable Long id,
+      @Valid @RequestBody InicioTramoDTO inicioDTO) {
+    return iniciarTramo(id, inicioDTO);
+  }
+
+  /**
+   * @deprecated Usar PUT /api/v1/tramos/{id}/fin
+   */
+  @PutMapping("/{id}/finalizar")
+  @Deprecated(forRemoval = true)
+  public ResponseEntity<TramoDTO> finalizarTramoLegacy(
+      @PathVariable Long id,
+      @Valid @RequestBody FinTramoDTO finDTO) {
+    return finalizarTramo(id, finDTO);
   }
 }

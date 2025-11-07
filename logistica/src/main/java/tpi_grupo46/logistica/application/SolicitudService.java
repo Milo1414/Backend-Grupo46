@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
 import tpi_grupo46.logistica.domain.model.CambioEstado;
 import tpi_grupo46.logistica.domain.model.Solicitud;
+import tpi_grupo46.logistica.domain.util.EstadoSolicitudValidator;
 import tpi_grupo46.logistica.infrastructure.repository.CambioEstadoRepository;
 import tpi_grupo46.logistica.infrastructure.repository.SolicitudRepository;
 
@@ -120,11 +121,24 @@ public class SolicitudService {
 
   /**
    * Cambia el estado de una solicitud y registra el cambio.
+   * Valida explícitamente que la transición sea permitida según las reglas de
+   * negocio.
    * 
    * @param solicitud   Solicitud a actualizar
    * @param nuevoEstado Nuevo estado
+   * @throws IllegalStateException Si la transición no es válida
    */
   private void cambiarEstadoSolicitud(Solicitud solicitud, EstadoSolicitud nuevoEstado) {
+    EstadoSolicitud estadoActual = solicitud.getEstado();
+
+    // Validar que la transición sea permitida
+    if (!EstadoSolicitudValidator.esTransicionValida(estadoActual, nuevoEstado)) {
+      throw new IllegalStateException(
+          "Transición de estado no permitida: " + estadoActual + " → " + nuevoEstado +
+              ". Transiciones válidas desde " + estadoActual + ": " +
+              EstadoSolicitudValidator.obtenerTransicionesValidas(estadoActual));
+    }
+
     solicitud.setEstado(nuevoEstado);
 
     CambioEstado cambio = CambioEstado.builder()

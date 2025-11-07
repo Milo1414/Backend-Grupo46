@@ -130,7 +130,7 @@ public class SolicitudController {
    * @param programacionDTO Datos validados de programación
    * @return SolicitudDTO actualizada
    */
-  @PutMapping("/{id}/programar")
+  @PutMapping("/{id}/estado/programada")
   @Operation(summary = "Programar solicitud", description = "Cambia el estado de la solicitud a PROGRAMADA y asigna costos y tiempos estimados")
   @ApiResponse(responseCode = "200", description = "Solicitud programada exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SolicitudDTO.class)))
   @ApiResponse(responseCode = "404", description = "Solicitud no encontrada")
@@ -160,7 +160,7 @@ public class SolicitudController {
    * @param finalizacionDTO Datos validados de finalización
    * @return SolicitudDTO actualizada
    */
-  @PutMapping("/{id}/entregar")
+  @PutMapping("/{id}/estado/entregada")
   @Operation(summary = "Finalizar entrega de solicitud", description = "Cambia el estado de la solicitud a ENTREGADA y registra los costos y tiempos reales")
   @ApiResponse(responseCode = "200", description = "Solicitud entregada exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SolicitudDTO.class)))
   @ApiResponse(responseCode = "404", description = "Solicitud no encontrada")
@@ -180,5 +180,32 @@ public class SolicitudController {
     var solicitudGuardada = solicitudRepository.save(solicitud);
 
     return ResponseEntity.ok(mapper.solicitudToDto(solicitudGuardada));
+  }
+
+  // ============================================================================
+  // ENDPOINTS LEGACY (DEPRECATED) - Mantener para compatibilidad hacia atrás
+  // TODO: Eliminar en versión 2.0
+  // ============================================================================
+
+  /**
+   * @deprecated Usar PUT /api/v1/solicitudes/{id}/estado/programada
+   */
+  @PutMapping("/{id}/programar")
+  @Deprecated(forRemoval = true)
+  public ResponseEntity<SolicitudDTO> programarSolicitudLegacy(
+      @PathVariable Long id,
+      @Valid @RequestBody ProgramacionDTO programacionDTO) {
+    return programarSolicitud(id, programacionDTO);
+  }
+
+  /**
+   * @deprecated Usar PUT /api/v1/solicitudes/{id}/estado/entregada
+   */
+  @PutMapping("/{id}/entregar")
+  @Deprecated(forRemoval = true)
+  public ResponseEntity<SolicitudDTO> entregarSolicitudLegacy(
+      @PathVariable Long id,
+      @Valid @RequestBody FinalizacionDTO finalizacionDTO) {
+    return entregarSolicitud(id, finalizacionDTO);
   }
 }
