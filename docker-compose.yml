@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # Servicio de PostgreSQL
+  postgres:
+    image: postgres:15
+    container_name: logistica_postgres
+    environment:
+      POSTGRES_DB: logistica_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: '1234'
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+    ports:
+      - "5432:5432"
+    volumes:
+      # Volumen persistente para los datos
+      - postgres_data:/var/lib/postgresql/data
+      # Opcional: puedes cargar scripts SQL aquí
+      # - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - logistica_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Servicio de la aplicación Spring Boot (opcional, si lo quieres en docker también)
+  logistica-app:
+    build:
+      context: ./logistica
+      dockerfile: Dockerfile
+    container_name: logistica_app
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/logistica_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: '1234'
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - logistica_network
+    volumes:
+      # Para desarrollo, puedes montar el código fuente
+      - ./logistica:/app/logistica
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  logistica_network:
+    driver: bridge
