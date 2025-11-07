@@ -6,13 +6,15 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tpi_grupo46.logistica.application.SolicitudService;
 import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
-import tpi_grupo46.logistica.dto.*;
+import tpi_grupo46.logistica.dto.solicitud.*;
+import tpi_grupo46.logistica.dto.cambioestado.CambioEstadoDTO;
 import tpi_grupo46.logistica.exception.ErrorResponse;
 import tpi_grupo46.logistica.mapper.LogisticaMapper;
 import tpi_grupo46.logistica.infrastructure.repository.SolicitudRepository;
@@ -20,7 +22,8 @@ import tpi_grupo46.logistica.infrastructure.repository.SolicitudRepository;
 import java.util.List;
 
 /**
- * Controlador REST para la gestión de solicitudes de transporte.
+ * Controlador REST responsable de gestionar las solicitudes de transporte.
+ * Forma parte de la capa API del microservicio de Logística.
  * Proporciona endpoints para crear, consultar y actualizar solicitudes.
  */
 @RestController
@@ -36,14 +39,14 @@ public class SolicitudController {
   /**
    * Crea una nueva solicitud de transporte.
    *
-   * @param solicitudDTO Datos de la solicitud a crear
+   * @param solicitudDTO Datos validados de la solicitud a crear
    * @return SolicitudDTO creada con HTTP 201
    */
   @PostMapping
   @Operation(summary = "Crear nueva solicitud", description = "Crea una nueva solicitud de transporte en estado BORRADOR")
   @ApiResponse(responseCode = "201", description = "Solicitud creada exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SolicitudDTO.class)))
   @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-  public ResponseEntity<SolicitudDTO> crearSolicitud(@RequestBody CrearSolicitudDTO solicitudDTO) {
+  public ResponseEntity<SolicitudDTO> crearSolicitud(@Valid @RequestBody CrearSolicitudDTO solicitudDTO) {
     var solicitud = solicitudService.crearSolicitud(solicitudDTO.clienteId(), solicitudDTO.contenedorId());
     return ResponseEntity.status(HttpStatus.CREATED).body(mapper.solicitudToDto(solicitud));
   }
@@ -124,7 +127,7 @@ public class SolicitudController {
    * Esta operación asigna el costo estimado y tiempo estimado.
    *
    * @param id              ID de la solicitud
-   * @param programacionDTO Datos de programación
+   * @param programacionDTO Datos validados de programación
    * @return SolicitudDTO actualizada
    */
   @PutMapping("/{id}/programar")
@@ -134,7 +137,7 @@ public class SolicitudController {
   @ApiResponse(responseCode = "400", description = "Solicitud en estado inválido")
   public ResponseEntity<SolicitudDTO> programarSolicitud(
       @PathVariable @Parameter(description = "ID de la solicitud", example = "1") Long id,
-      @RequestBody ProgramacionDTO programacionDTO) {
+      @Valid @RequestBody ProgramacionDTO programacionDTO) {
     var solicitud = solicitudRepository.findById(id)
         .orElseThrow(() -> new tpi_grupo46.logistica.exception.EntityNotFoundException(
             "Solicitud con ID " + id + " no encontrada"));
@@ -154,7 +157,7 @@ public class SolicitudController {
    * Esta operación finaliza la entrega y registra costos y tiempos reales.
    *
    * @param id              ID de la solicitud
-   * @param finalizacionDTO Datos de finalización
+   * @param finalizacionDTO Datos validados de finalización
    * @return SolicitudDTO actualizada
    */
   @PutMapping("/{id}/entregar")
@@ -164,7 +167,7 @@ public class SolicitudController {
   @ApiResponse(responseCode = "400", description = "Solicitud en estado inválido")
   public ResponseEntity<SolicitudDTO> entregarSolicitud(
       @PathVariable @Parameter(description = "ID de la solicitud", example = "1") Long id,
-      @RequestBody FinalizacionDTO finalizacionDTO) {
+      @Valid @RequestBody FinalizacionDTO finalizacionDTO) {
     var solicitud = solicitudRepository.findById(id)
         .orElseThrow(() -> new tpi_grupo46.logistica.exception.EntityNotFoundException(
             "Solicitud con ID " + id + " no encontrada"));

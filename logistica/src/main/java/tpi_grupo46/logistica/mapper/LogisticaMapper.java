@@ -6,13 +6,16 @@ import tpi_grupo46.logistica.domain.model.Solicitud;
 import tpi_grupo46.logistica.domain.model.Ruta;
 import tpi_grupo46.logistica.domain.model.Tramo;
 import tpi_grupo46.logistica.domain.model.CambioEstado;
-import tpi_grupo46.logistica.dto.SolicitudDTO;
-import tpi_grupo46.logistica.dto.RutaDTO;
-import tpi_grupo46.logistica.dto.TramoDTO;
-import tpi_grupo46.logistica.dto.CambioEstadoDTO;
+import tpi_grupo46.logistica.dto.solicitud.SolicitudDTO;
+import tpi_grupo46.logistica.dto.ruta.RutaDTO;
+import tpi_grupo46.logistica.dto.tramo.TramoDTO;
+import tpi_grupo46.logistica.dto.cambioestado.CambioEstadoDTO;
 
 /**
- * Mapper para convertir entre entidades y DTOs usando MapStruct
+ * Mapper para convertir entre entidades y DTOs usando MapStruct.
+ * Centraliza la lógica de transformación entre la capa de dominio y la capa de
+ * presentación,
+ * asegurando consistencia en el mapeo de datos.
  */
 @Mapper(componentModel = "spring")
 public interface LogisticaMapper {

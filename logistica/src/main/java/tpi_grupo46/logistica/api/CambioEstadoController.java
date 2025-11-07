@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
-import tpi_grupo46.logistica.dto.CambioEstadoDTO;
+import tpi_grupo46.logistica.dto.cambioestado.CambioEstadoDTO;
 import tpi_grupo46.logistica.exception.ErrorResponse;
 import tpi_grupo46.logistica.mapper.LogisticaMapper;
 import tpi_grupo46.logistica.infrastructure.repository.CambioEstadoRepository;
@@ -19,7 +19,8 @@ import java.util.List;
 
 /**
  * Controlador REST para consultar el historial de cambios de estado.
- * Proporciona endpoints de solo lectura para auditoría y trazabilidad.
+ * Forma parte de la capa API y proporciona endpoints de solo lectura
+ * para auditoría y trazabilidad del ciclo de vida de las solicitudes.
  */
 @RestController
 @RequestMapping("/api/v1/cambios-estado")

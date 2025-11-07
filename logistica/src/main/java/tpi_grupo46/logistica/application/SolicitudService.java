@@ -4,51 +4,45 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
 import tpi_grupo46.logistica.domain.model.CambioEstado;
-import tpi_grupo46.logistica.domain.model.Ruta;
 import tpi_grupo46.logistica.domain.model.Solicitud;
-import tpi_grupo46.logistica.domain.model.Tramo;
 import tpi_grupo46.logistica.infrastructure.repository.CambioEstadoRepository;
-import tpi_grupo46.logistica.infrastructure.repository.RutaRepository;
 import tpi_grupo46.logistica.infrastructure.repository.SolicitudRepository;
-import tpi_grupo46.logistica.infrastructure.repository.TramoRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Servicio de aplicación para gestionar solicitudes de transporte.
  * 
- * Proporciona operaciones de negocio de alto nivel para crear, actualizar
- * y consultar solicitudes de transporte.
+ * Encapsulación de la lógica de negocio relacionada exclusivamente con
+ * solicitudes:
+ * creación, programación, consulta por cliente/estado e historial de cambios.
+ * Forma parte de la capa de aplicación (Application Layer) y coordina
+ * operaciones
+ * entre la capa de dominio y la de infraestructura. La lógica de rutas y tramos
+ * ha sido delegada a RutaService y TramoService respectivamente.
  */
 @Service
 @Transactional
 public class SolicitudService {
 
   private final SolicitudRepository solicitudRepository;
-  private final RutaRepository rutaRepository;
-  private final TramoRepository tramoRepository;
   private final CambioEstadoRepository cambioEstadoRepository;
 
   public SolicitudService(SolicitudRepository solicitudRepository,
-      RutaRepository rutaRepository,
-      TramoRepository tramoRepository,
       CambioEstadoRepository cambioEstadoRepository) {
     this.solicitudRepository = solicitudRepository;
-    this.rutaRepository = rutaRepository;
-    this.tramoRepository = tramoRepository;
     this.cambioEstadoRepository = cambioEstadoRepository;
   }
 
   /**
    * Crea una nueva solicitud de transporte en estado BORRADOR.
-   * Automáticamente registra un CambioEstado inicial.
+   * Automáticamente registra un CambioEstado inicial para auditoría.
    * 
-   * @param clienteId    ID del cliente
-   * @param contenedorId ID del contenedor
-   * @return Solicitud creada
+   * @param clienteId    ID del cliente que hace la solicitud
+   * @param contenedorId ID del contenedor a transportar
+   * @return Solicitud creada en estado BORRADOR
    */
   public Solicitud crearSolicitud(Long clienteId, Long contenedorId) {
     Solicitud solicitud = Solicitud.builder()
@@ -57,7 +51,10 @@ public class SolicitudService {
         .estado(EstadoSolicitud.BORRADOR)
         .build();
 
-    return solicitudRepository.save(solicitud);
+    var solicitudGuardada = solicitudRepository.save(solicitud);
+    guardarCambioEstado(solicitudGuardada, EstadoSolicitud.BORRADOR);
+
+    return solicitudGuardada;
   }
 
   /**
@@ -99,49 +96,6 @@ public class SolicitudService {
     cambiarEstadoSolicitud(solicitud, EstadoSolicitud.PROGRAMADA);
 
     return solicitudRepository.save(solicitud);
-  }
-
-  /**
-   * Crea una ruta para una solicitud con los tramos necesarios.
-   * 
-   * @param solicitudId ID de la solicitud
-   * @param tramos      Lista de tramos de la ruta
-   * @return Ruta creada
-   */
-  public Ruta crearRuta(Long solicitudId, List<Tramo> tramos) {
-    Solicitud solicitud = solicitudRepository.findById(solicitudId)
-        .orElseThrow(() -> new IllegalArgumentException("Solicitud no encontrada: " + solicitudId));
-
-    Ruta ruta = Ruta.builder()
-        .solicitud(solicitud)
-        .cantidadTramos(tramos.size())
-        .cantidadDepositos(0) // Se puede calcular según los tramos
-        .tramos(new ArrayList<>())
-        .build();
-
-    ruta = rutaRepository.save(ruta);
-
-    // Asociar tramos a la ruta
-    for (Tramo tramo : tramos) {
-      tramo.setRuta(ruta);
-      tramo.setSolicitud(solicitud);
-      tramoRepository.save(tramo);
-    }
-
-    solicitud.setRuta(ruta);
-    solicitudRepository.save(solicitud);
-
-    return ruta;
-  }
-
-  /**
-   * Obtiene los tramos de una ruta.
-   * 
-   * @param rutaId ID de la ruta
-   * @return Lista de tramos
-   */
-  public List<Tramo> obtenerTramosPorRuta(Long rutaId) {
-    return tramoRepository.findByRutaId(rutaId);
   }
 
   /**

@@ -6,13 +6,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tpi_grupo46.logistica.dto.TramoDTO;
-import tpi_grupo46.logistica.dto.AsignarCamionDTO;
-import tpi_grupo46.logistica.dto.InicioTramoDTO;
-import tpi_grupo46.logistica.dto.FinTramoDTO;
+import tpi_grupo46.logistica.application.TramoService;
+import tpi_grupo46.logistica.dto.tramo.*;
 import tpi_grupo46.logistica.exception.ErrorResponse;
 import tpi_grupo46.logistica.mapper.LogisticaMapper;
 import tpi_grupo46.logistica.infrastructure.repository.TramoRepository;
@@ -21,8 +20,9 @@ import java.util.List;
 
 /**
  * Controlador REST para la gestión de tramos de rutas.
- * Proporciona endpoints para asignar recursos y gestionar el progreso de
- * tramos.
+ * Forma parte de la capa API y coordina solicitudes de gestión de tramos,
+ * delegando la lógica de negocio a TramoService. Proporciona endpoints
+ * para asignar recursos y gestionar el progreso de tramos con validación.
  */
 @RestController
 @RequestMapping("/api/v1/tramos")
@@ -30,6 +30,7 @@ import java.util.List;
 @Tag(name = "Tramos", description = "API para la gestión de tramos de rutas")
 public class TramoController {
 
+  private final TramoService tramoService;
   private final TramoRepository tramoRepository;
   private final LogisticaMapper mapper;
 
@@ -87,9 +88,10 @@ public class TramoController {
 
   /**
    * Asigna un camión a un tramo.
+   * Valida que el camionId sea válido y positivo.
    *
    * @param id               ID del tramo
-   * @param asignarCamionDTO Datos de asignación (camionId)
+   * @param asignarCamionDTO Datos validados de asignación (camionId)
    * @return TramoDTO actualizado
    */
   @PutMapping("/{id}/asignar-camion")
@@ -99,22 +101,17 @@ public class TramoController {
   @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
   public ResponseEntity<TramoDTO> asignarCamion(
       @PathVariable @Parameter(description = "ID del tramo", example = "1") Long id,
-      @RequestBody AsignarCamionDTO asignarCamionDTO) {
-    var tramo = tramoRepository.findById(id)
-        .orElseThrow(() -> new tpi_grupo46.logistica.exception.EntityNotFoundException(
-            "Tramo con ID " + id + " no encontrado"));
-
-    tramo.setCamionId(asignarCamionDTO.camionId());
-    var tramoGuardado = tramoRepository.save(tramo);
-
-    return ResponseEntity.ok(mapper.tramoToDto(tramoGuardado));
+      @Valid @RequestBody AsignarCamionDTO asignarCamionDTO) {
+    var tramoActualizado = tramoService.asignarCamion(id, asignarCamionDTO.camionId());
+    return ResponseEntity.ok(mapper.tramoToDto(tramoActualizado));
   }
 
   /**
    * Inicia el recorrido de un tramo.
+   * Valida que la fecha/hora de inicio sea proporcionada.
    *
    * @param id        ID del tramo
-   * @param inicioDTO Datos de inicio (fecha y hora)
+   * @param inicioDTO Datos validados de inicio (fecha y hora)
    * @return TramoDTO actualizado
    */
   @PutMapping("/{id}/iniciar")
@@ -124,22 +121,17 @@ public class TramoController {
   @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
   public ResponseEntity<TramoDTO> iniciarTramo(
       @PathVariable @Parameter(description = "ID del tramo", example = "1") Long id,
-      @RequestBody InicioTramoDTO inicioDTO) {
-    var tramo = tramoRepository.findById(id)
-        .orElseThrow(() -> new tpi_grupo46.logistica.exception.EntityNotFoundException(
-            "Tramo con ID " + id + " no encontrado"));
-
-    tramo.setFechaHoraInicioReal(inicioDTO.fechaHoraInicio());
-    var tramoGuardado = tramoRepository.save(tramo);
-
-    return ResponseEntity.ok(mapper.tramoToDto(tramoGuardado));
+      @Valid @RequestBody InicioTramoDTO inicioDTO) {
+    var tramoActualizado = tramoService.iniciarTramo(id, inicioDTO.fechaHoraInicio());
+    return ResponseEntity.ok(mapper.tramoToDto(tramoActualizado));
   }
 
   /**
    * Finaliza el recorrido de un tramo.
+   * Valida que los datos de finalización sean válidos (fechaHoraFin, costoReal).
    *
    * @param id     ID del tramo
-   * @param finDTO Datos de finalización (fecha/hora final y costo real)
+   * @param finDTO Datos validados de finalización (fecha/hora final y costo real)
    * @return TramoDTO actualizado
    */
   @PutMapping("/{id}/finalizar")
@@ -149,15 +141,8 @@ public class TramoController {
   @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
   public ResponseEntity<TramoDTO> finalizarTramo(
       @PathVariable @Parameter(description = "ID del tramo", example = "1") Long id,
-      @RequestBody FinTramoDTO finDTO) {
-    var tramo = tramoRepository.findById(id)
-        .orElseThrow(() -> new tpi_grupo46.logistica.exception.EntityNotFoundException(
-            "Tramo con ID " + id + " no encontrado"));
-
-    tramo.setFechaHoraFinReal(finDTO.fechaHoraFin());
-    tramo.setCostoReal(finDTO.costoReal());
-    var tramoGuardado = tramoRepository.save(tramo);
-
-    return ResponseEntity.ok(mapper.tramoToDto(tramoGuardado));
+      @Valid @RequestBody FinTramoDTO finDTO) {
+    var tramoActualizado = tramoService.finalizarTramo(id, finDTO.fechaHoraFin(), finDTO.costoReal());
+    return ResponseEntity.ok(mapper.tramoToDto(tramoActualizado));
   }
 }
