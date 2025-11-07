@@ -1,24 +1,25 @@
 package tpi_grupo46.logistica.exception;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Controlador global de excepciones para el microservicio Logística.
  * Captura excepciones en todos los controllers y retorna respuestas HTTP
  * coherentes.
+ * 
+ * TEMPORALMENTE DESACTIVADO por incompatibilidad con Spring Boot 3.5.7
  */
-@RestControllerAdvice
+//@RestControllerAdvice
 public class GlobalExceptionHandler {
 
   private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
