@@ -1,6 +1,5 @@
 package tpi_grupo46.logistica.dto;
 
-import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
 import java.time.LocalDateTime;
 
 /**
@@ -8,6 +7,7 @@ import java.time.LocalDateTime;
  */
 public record CambioEstadoDTO(
         Long id,
-        EstadoSolicitud estado,
-        LocalDateTime fechaCambio
+        String estadoCodigo,
+        LocalDateTime fechaInicio,
+        LocalDateTime fechaFin
 ) {}

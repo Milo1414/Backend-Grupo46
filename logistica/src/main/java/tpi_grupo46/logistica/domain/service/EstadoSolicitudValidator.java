@@ -1,7 +1,5 @@
 package tpi_grupo46.logistica.domain.service;
 
-import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -15,17 +13,17 @@ import java.util.Set;
  * Encapsula la lógica de negocio que define qué transiciones entre estados
  * son permitidas en el ciclo de vida de una solicitud de transporte.
  * 
- * Estados válidos y transiciones permitidas:
+ * Estados válidos y transiciones permitidas (códigos de la tabla ESTADO):
  * - BORRADOR → PROGRAMADA (asignación de costos/tiempos estimados)
  * - PROGRAMADA → EN_TRANSITO (inicio de transporte)
  * - EN_TRANSITO → ENTREGADA (finalización de entrega)
  */
 public class EstadoSolicitudValidator {
 
-  private static final Map<EstadoSolicitud, Set<EstadoSolicitud>> TRANSICIONES_VALIDAS = Map.of(
-      EstadoSolicitud.BORRADOR, Set.of(EstadoSolicitud.PROGRAMADA),
-      EstadoSolicitud.PROGRAMADA, Set.of(EstadoSolicitud.EN_TRANSITO),
-      EstadoSolicitud.EN_TRANSITO, Set.of(EstadoSolicitud.ENTREGADA));
+  private static final Map<String, Set<String>> TRANSICIONES_VALIDAS = Map.of(
+      "BORRADOR", Set.of("PROGRAMADA"),
+      "PROGRAMADA", Set.of("EN_TRANSITO"),
+      "EN_TRANSITO", Set.of("ENTREGADA"));
 
   private EstadoSolicitudValidator() {
     // Clase utilitaria: no debe ser instanciada
@@ -34,11 +32,11 @@ public class EstadoSolicitudValidator {
   /**
    * Valida si una transición de estado es permitida.
    *
-   * @param origen  Estado actual de la solicitud
-   * @param destino Estado hacia el cual se intenta transicionar
+   * @param origen  Código del estado actual de la solicitud
+   * @param destino Código del estado hacia el cual se intenta transicionar
    * @return true si la transición es válida, false en caso contrario
    */
-  public static boolean esTransicionValida(EstadoSolicitud origen, EstadoSolicitud destino) {
+  public static boolean esTransicionValida(String origen, String destino) {
     return TRANSICIONES_VALIDAS
         .getOrDefault(origen, Set.of())
         .contains(destino);
@@ -48,10 +46,10 @@ public class EstadoSolicitudValidator {
    * Obtiene el conjunto de estados válidos hacia los que se puede transicionar
    * desde un estado dado.
    *
-   * @param estado Estado actual
-   * @return Conjunto de estados permitidos (nunca nulo, puede ser vacío)
+   * @param estado Código del estado actual
+   * @return Conjunto de códigos de estados permitidos (nunca nulo, puede ser vacío)
    */
-  public static Set<EstadoSolicitud> obtenerTransicionesValidas(EstadoSolicitud estado) {
+  public static Set<String> obtenerTransicionesValidas(String estado) {
     return TRANSICIONES_VALIDAS.getOrDefault(estado, Set.of());
   }
 }

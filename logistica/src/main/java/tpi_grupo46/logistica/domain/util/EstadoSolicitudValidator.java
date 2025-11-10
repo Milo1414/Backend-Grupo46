@@ -1,7 +1,8 @@
 package tpi_grupo46.logistica.domain.util;
 
-import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
-
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,36 +19,27 @@ import java.util.Set;
  */
 public class EstadoSolicitudValidator {
 
-  private static final Map<EstadoSolicitud, Set<EstadoSolicitud>> TRANSICIONES_VALIDAS = Map.of(
-      EstadoSolicitud.BORRADOR, Set.of(EstadoSolicitud.PROGRAMADA),
-      EstadoSolicitud.PROGRAMADA, Set.of(EstadoSolicitud.EN_TRANSITO),
-      EstadoSolicitud.EN_TRANSITO, Set.of(EstadoSolicitud.ENTREGADA));
+  private static final Map<String, Set<String>> TRANSICIONES_VALIDAS;
+  
+  static {
+    Map<String, Set<String>> map = new HashMap<>();
+    map.put("BORRADOR", new HashSet<>(Collections.singletonList("PROGRAMADA")));
+    map.put("PROGRAMADA", new HashSet<>(Collections.singletonList("EN_TRANSITO")));
+    map.put("EN_TRANSITO", new HashSet<>(Collections.singletonList("ENTREGADA")));
+    TRANSICIONES_VALIDAS = Collections.unmodifiableMap(map);
+  }
 
   private EstadoSolicitudValidator() {
     // Clase utilitaria: no debe ser instanciada
   }
 
-  /**
-   * Valida si una transición de estado es permitida.
-   *
-   * @param origen  Estado actual de la solicitud
-   * @param destino Estado hacia el cual se intenta transicionar
-   * @return true si la transición es válida, false en caso contrario
-   */
-  public static boolean esTransicionValida(EstadoSolicitud origen, EstadoSolicitud destino) {
+  public static boolean esTransicionValida(String origen, String destino) {
     return TRANSICIONES_VALIDAS
-        .getOrDefault(origen, Set.of())
+        .getOrDefault(origen, Collections.emptySet())
         .contains(destino);
   }
 
-  /**
-   * Obtiene el conjunto de estados válidos hacia los que se puede transicionar
-   * desde un estado dado.
-   *
-   * @param estado Estado actual
-   * @return Conjunto de estados permitidos (nunca nulo, puede ser vacío)
-   */
-  public static Set<EstadoSolicitud> obtenerTransicionesValidas(EstadoSolicitud estado) {
-    return TRANSICIONES_VALIDAS.getOrDefault(estado, Set.of());
+  public static Set<String> obtenerTransicionesValidas(String estado) {
+    return TRANSICIONES_VALIDAS.getOrDefault(estado, Collections.emptySet());
   }
 }

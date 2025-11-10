@@ -12,11 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tpi_grupo46.logistica.application.SolicitudService;
-import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
+import tpi_grupo46.logistica.domain.model.Estado;
 import tpi_grupo46.logistica.dto.solicitud.*;
 import tpi_grupo46.logistica.dto.cambioestado.CambioEstadoDTO;
 import tpi_grupo46.logistica.exception.ErrorResponse;
 import tpi_grupo46.logistica.infrastructure.mapper.LogisticaMapper;
+import tpi_grupo46.logistica.infrastructure.repository.EstadoRepository;
 import tpi_grupo46.logistica.infrastructure.repository.SolicitudRepository;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class SolicitudController {
 
   private final SolicitudService solicitudService;
   private final SolicitudRepository solicitudRepository;
+  private final EstadoRepository estadoRepository;
   private final LogisticaMapper mapper;
 
   /**
@@ -87,17 +89,19 @@ public class SolicitudController {
   }
 
   /**
-   * Obtiene solicitudes filtradas por estado.
+   * Obtiene solicitudes filtradas por código de estado.
    *
-   * @param estado Estado de la solicitud (BORRADOR, PROGRAMADA, EN_TRANSITO,
-   *               ENTREGADA, CANCELADA)
+   * @param codigoEstado Código de estado (BORRADOR, PROGRAMADA, EN_TRANSITO, etc.)
    * @return Lista de SolicitudDTO
    */
-  @GetMapping("/estado/{estado}")
-  @Operation(summary = "Obtener solicitudes por estado", description = "Recupera todas las solicitudes con un estado específico")
+  @GetMapping("/codigo-estado/{codigoEstado}")
+  @Operation(summary = "Obtener solicitudes por código de estado", description = "Recupera todas las solicitudes con un código de estado específico")
   @ApiResponse(responseCode = "200", description = "Solicitudes encontradas", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SolicitudDTO.class)))
   public ResponseEntity<List<SolicitudDTO>> obtenerSolicitudesPorEstado(
-      @PathVariable @Parameter(description = "Estado de la solicitud", example = "PROGRAMADA") EstadoSolicitud estado) {
+      @PathVariable @Parameter(description = "Código del estado", example = "PROGRAMADA") String codigoEstado) {
+    Estado estado = estadoRepository.findByCodigoAndEntidadTipo(codigoEstado, "SOLICITUD")
+        .orElseThrow(() -> new tpi_grupo46.logistica.exception.EntityNotFoundException(
+            "Estado con código " + codigoEstado + " no encontrado para SOLICITUD"));
     var solicitudes = solicitudService.obtenerSolicitudesPorEstado(estado);
     return ResponseEntity.ok(solicitudes.stream()
         .map(mapper::solicitudToDto)
@@ -138,18 +142,8 @@ public class SolicitudController {
   public ResponseEntity<SolicitudDTO> programarSolicitud(
       @PathVariable @Parameter(description = "ID de la solicitud", example = "1") Long id,
       @Valid @RequestBody ProgramacionDTO programacionDTO) {
-    var solicitud = solicitudRepository.findById(id)
-        .orElseThrow(() -> new tpi_grupo46.logistica.exception.EntityNotFoundException(
-            "Solicitud con ID " + id + " no encontrada"));
-
-    solicitud.setCostoEstimado(programacionDTO.costoEstimado());
-    solicitud.setTiempoEstimadoHoras(programacionDTO.tiempoEstimadoHoras());
-    solicitud.setEstado(EstadoSolicitud.PROGRAMADA);
-
-    solicitudService.guardarCambioEstado(solicitud, EstadoSolicitud.PROGRAMADA);
-    var solicitudGuardada = solicitudRepository.save(solicitud);
-
-    return ResponseEntity.ok(mapper.solicitudToDto(solicitudGuardada));
+    var solicitud = solicitudService.programarSolicitud(id, programacionDTO.costoEstimado(), programacionDTO.tiempoEstimadoHoras());
+    return ResponseEntity.ok(mapper.solicitudToDto(solicitud));
   }
 
   /**
@@ -168,18 +162,8 @@ public class SolicitudController {
   public ResponseEntity<SolicitudDTO> entregarSolicitud(
       @PathVariable @Parameter(description = "ID de la solicitud", example = "1") Long id,
       @Valid @RequestBody FinalizacionDTO finalizacionDTO) {
-    var solicitud = solicitudRepository.findById(id)
-        .orElseThrow(() -> new tpi_grupo46.logistica.exception.EntityNotFoundException(
-            "Solicitud con ID " + id + " no encontrada"));
-
-    solicitud.setCostoFinal(finalizacionDTO.costoFinal());
-    solicitud.setTiempoRealHoras(finalizacionDTO.tiempoRealHoras());
-    solicitud.setEstado(EstadoSolicitud.ENTREGADA);
-
-    solicitudService.guardarCambioEstado(solicitud, EstadoSolicitud.ENTREGADA);
-    var solicitudGuardada = solicitudRepository.save(solicitud);
-
-    return ResponseEntity.ok(mapper.solicitudToDto(solicitudGuardada));
+    var solicitud = solicitudService.completarEntrega(id, finalizacionDTO.costoFinal(), finalizacionDTO.tiempoRealHoras());
+    return ResponseEntity.ok(mapper.solicitudToDto(solicitud));
   }
 
   // ============================================================================

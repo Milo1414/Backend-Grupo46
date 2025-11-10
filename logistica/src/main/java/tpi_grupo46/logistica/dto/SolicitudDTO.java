@@ -1,6 +1,5 @@
 package tpi_grupo46.logistica.dto;
 
-import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,7 +12,7 @@ public record SolicitudDTO(
         Long id,
         Long clienteId,
         Long contenedorId,
-        EstadoSolicitud estado,
+        String estadoActual,  // Código del estado actual
         BigDecimal costoEstimado,
         BigDecimal costoFinal,
         Double tiempoEstimadoHoras,

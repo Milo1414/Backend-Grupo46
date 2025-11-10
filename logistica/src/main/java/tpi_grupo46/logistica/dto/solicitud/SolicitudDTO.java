@@ -1,6 +1,5 @@
 package tpi_grupo46.logistica.dto.solicitud;
 
-import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
 import tpi_grupo46.logistica.dto.ruta.RutaDTO;
 import tpi_grupo46.logistica.dto.cambioestado.CambioEstadoDTO;
 import java.math.BigDecimal;
@@ -16,7 +15,7 @@ public record SolicitudDTO(
     Long id,
     Long clienteId,
     Long contenedorId,
-    EstadoSolicitud estado,
+    String estadoActual,  // Código del estado actual (obtenido del último CambioEstado)
     BigDecimal costoEstimado,
     BigDecimal costoFinal,
     Double tiempoEstimadoHoras,

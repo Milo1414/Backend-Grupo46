@@ -49,7 +49,5 @@ public class Ruta implements Serializable {
     @JoinColumn(name = "solicitud_id", unique = true, nullable = false)
     private Solicitud solicitud;
 
-    @OneToMany(mappedBy = "ruta", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    private List<Tramo> tramos;
+   
 }

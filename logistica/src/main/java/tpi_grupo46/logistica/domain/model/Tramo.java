@@ -1,5 +1,9 @@
 package tpi_grupo46.logistica.domain.model;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,10 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * Representa un tramo dentro de una ruta.
@@ -38,16 +38,13 @@ public class Tramo implements Serializable {
     private Long id;
 
     @Column(name = "origen", nullable = false)
-    private String origen;
+    private Integer origen;
 
     @Column(name = "destino", nullable = false)
-    private String destino;
+    private Integer destino;
 
     @Column(name = "tipo", nullable = false)
     private String tipo; // origen-destino, origen-deposito, deposito-destino, deposito-deposito
-
-    @Column(name = "estado", nullable = false)
-    private String estado; // estimado, asignado, iniciado, finalizado
 
     @Column(name = "costo_aproximado")
     private BigDecimal costoAproximado;
@@ -74,7 +71,4 @@ public class Tramo implements Serializable {
     @JoinColumn(name = "ruta_id", nullable = false)
     private Ruta ruta;
 
-    @ManyToOne
-    @JoinColumn(name = "solicitud_id", nullable = false)
-    private Solicitud solicitud;
 }

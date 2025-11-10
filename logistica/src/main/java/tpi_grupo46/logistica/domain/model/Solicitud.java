@@ -3,8 +3,6 @@ package tpi_grupo46.logistica.domain.model;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,7 +14,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -50,10 +47,6 @@ public class Solicitud implements Serializable {
     @Column(name = "contenedor_id", nullable = false)
     private Long contenedorId; // ID del contenedor a trasladar
 
-    @Column(name = "estado", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private EstadoSolicitud estado; // BORRADOR, PROGRAMADA, EN_TRANSITO, ENTREGADA, CANCELADA
-
     @Column(name = "costo_estimado")
     private BigDecimal costoEstimado;
 
@@ -79,26 +72,16 @@ public class Solicitud implements Serializable {
     private List<CambioEstado> cambiosEstado = new ArrayList<>();
 
     /**
-     * Registra automáticamente un cambio de estado cuando se crea una solicitud.
-     * Se ejecuta antes de persistir la entidad.
+     * Registra automáticamente la fecha de creación.
+     * Los cambios de estado se registran en la tabla CAMBIO_ESTADO por separado.
      */
     @jakarta.persistence.PrePersist
     public void prePersist() {
         if (this.fechaCreacion == null) {
             this.fechaCreacion = LocalDateTime.now();
         }
-        if (this.estado == null) {
-            this.estado = EstadoSolicitud.BORRADOR;
-        }
-        // Registrar cambio de estado inicial
         if (this.cambiosEstado == null) {
             this.cambiosEstado = new ArrayList<>();
         }
-        CambioEstado cambioInicial = CambioEstado.builder()
-                .estado(this.estado)
-                .fechaCambio(LocalDateTime.now())
-                .solicitud(this)
-                .build();
-        this.cambiosEstado.add(cambioInicial);
     }
 }

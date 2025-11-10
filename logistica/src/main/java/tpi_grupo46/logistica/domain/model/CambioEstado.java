@@ -2,8 +2,6 @@ package tpi_grupo46.logistica.domain.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -38,14 +35,24 @@ public class CambioEstado implements Serializable {
     @Column(name = "id_cambio_estado")
     private Long id;
 
-    @Column(name = "estado", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private EstadoSolicitud estado;
+    @ManyToOne
+    @JoinColumn(name = "id_estado", nullable = false)
+    private Estado estado;
 
-    @Column(name = "fecha_cambio", nullable = false)
-    private LocalDateTime fechaCambio;
+    @Column(name = "fecha_inicio", nullable = false)
+    private LocalDateTime fechaInicio;
+
+    @Column(name = "fecha_fin")
+    private LocalDateTime fechaFin;
 
     @ManyToOne
-    @JoinColumn(name = "solicitud_id", nullable = false)
+    @JoinColumn(name = "solicitud_id")
     private Solicitud solicitud;
+
+    @ManyToOne
+    @JoinColumn(name = "tramo_id")
+    private Tramo tramo;
+
+    @Column(name = "contenedor_id")
+    private Long contenedorId;  // Referencia al contenedor (está en ms-recursos)
 }

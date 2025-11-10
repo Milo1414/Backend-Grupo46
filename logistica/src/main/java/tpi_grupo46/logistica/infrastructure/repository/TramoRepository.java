@@ -18,11 +18,6 @@ public interface TramoRepository extends JpaRepository<Tramo, Long> {
     List<Tramo> findByRutaId(Long rutaId);
     
     /**
-     * Busca todos los tramos asociados a una solicitud específica
-     */
-    List<Tramo> findBySolicitudId(Long solicitudId);
-    
-    /**
      * Busca todos los tramos asignados a un camión
      */
     List<Tramo> findByCamionId(Long camionId);

@@ -1,40 +1,18 @@
 package tpi_grupo46.logistica.config;
 
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-
-@Configuration
+/**
+ * Configuración de DataSource para PostgreSQL/Supabase.
+ * 
+ * NOTA: Esta clase está aquí por compatibilidad, pero toda la configuración
+ * real se encuentra en application.yml (spring.datasource.url, username, password).
+ * 
+ * Spring Boot 3.x maneja automáticamente la creación del DataSource y HikariCP
+ * a partir de las propiedades en application.yml, por lo que no necesitamos
+ * configuración manual aquí.
+ * 
+ * Para cambiar la conexión a la BD, modifica application.yml, no este archivo.
+ */
 public class PostgresDataSourceConfig {
-
-    @Bean
-    @ConfigurationProperties(prefix = "spring.datasource")
-    public HikariConfig hikariConfig() {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:postgresql://localhost:5432/logistica_db");
-        config.setUsername("postgres");
-        config.setPassword("1234");
-        config.setDriverClassName("org.postgresql.Driver");
-        
-        // Configurar propiedades del DataSource para PostgreSQL
-        Properties props = new Properties();
-        props.setProperty("assumeMinServerVersion", "9.0");
-        // Deshabilitar explícitamente el envío de timezone
-        props.setProperty("options", "-c TimeZone=UTC");
-        config.setDataSourceProperties(props);
-        
-        return config;
-    }
-
-    @Bean
-    public DataSource dataSource() {
-        return new HikariDataSource(hikariConfig());
-    }
+    // La configuración se carga automáticamente desde application.yml
+    // No es necesario crear beans adicionales
 }

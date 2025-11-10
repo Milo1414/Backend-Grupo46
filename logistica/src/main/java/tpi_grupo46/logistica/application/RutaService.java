@@ -9,7 +9,6 @@ import tpi_grupo46.logistica.infrastructure.repository.RutaRepository;
 import tpi_grupo46.logistica.infrastructure.repository.SolicitudRepository;
 import tpi_grupo46.logistica.infrastructure.repository.TramoRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,7 +37,7 @@ public class RutaService {
 
   /**
    * Crea una ruta para una solicitud con los tramos necesarios.
-   * Asocia todos los tramos a la ruta y actualiza la solicitud.
+   * Asocia todos los tramos a la ruta.
    *
    * @param solicitudId ID de la solicitud asociada
    * @param tramos      Lista de tramos que componen la ruta
@@ -53,7 +52,6 @@ public class RutaService {
         .solicitud(solicitud)
         .cantidadTramos(tramos.size())
         .cantidadDepositos(0) // Se puede calcular según los tramos
-        .tramos(new ArrayList<>())
         .build();
 
     ruta = rutaRepository.save(ruta);
@@ -61,12 +59,8 @@ public class RutaService {
     // Asociar tramos a la ruta
     for (Tramo tramo : tramos) {
       tramo.setRuta(ruta);
-      tramo.setSolicitud(solicitud);
       tramoRepository.save(tramo);
     }
-
-    solicitud.setRuta(ruta);
-    solicitudRepository.save(solicitud);
 
     return ruta;
   }

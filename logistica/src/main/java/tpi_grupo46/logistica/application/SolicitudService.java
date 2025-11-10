@@ -2,11 +2,11 @@ package tpi_grupo46.logistica.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
 import tpi_grupo46.logistica.domain.model.CambioEstado;
+import tpi_grupo46.logistica.domain.model.Estado;
 import tpi_grupo46.logistica.domain.model.Solicitud;
-import tpi_grupo46.logistica.domain.service.EstadoSolicitudValidator;
 import tpi_grupo46.logistica.infrastructure.repository.CambioEstadoRepository;
+import tpi_grupo46.logistica.infrastructure.repository.EstadoRepository;
 import tpi_grupo46.logistica.infrastructure.repository.SolicitudRepository;
 
 import java.math.BigDecimal;
@@ -30,11 +30,14 @@ public class SolicitudService {
 
   private final SolicitudRepository solicitudRepository;
   private final CambioEstadoRepository cambioEstadoRepository;
+  private final EstadoRepository estadoRepository;
 
   public SolicitudService(SolicitudRepository solicitudRepository,
-      CambioEstadoRepository cambioEstadoRepository) {
+      CambioEstadoRepository cambioEstadoRepository,
+      EstadoRepository estadoRepository) {
     this.solicitudRepository = solicitudRepository;
     this.cambioEstadoRepository = cambioEstadoRepository;
+    this.estadoRepository = estadoRepository;
   }
 
   /**
@@ -46,14 +49,17 @@ public class SolicitudService {
    * @return Solicitud creada en estado BORRADOR
    */
   public Solicitud crearSolicitud(Long clienteId, Long contenedorId) {
+    // Obtener el estado BORRADOR para SOLICITUD
+    Estado estadoBorrador = estadoRepository.findByCodigoAndEntidadTipo("BORRADOR", "SOLICITUD")
+        .orElseThrow(() -> new IllegalArgumentException("Estado BORRADOR no encontrado para SOLICITUD"));
+
     Solicitud solicitud = Solicitud.builder()
         .clienteId(clienteId)
         .contenedorId(contenedorId)
-        .estado(EstadoSolicitud.BORRADOR)
         .build();
 
     var solicitudGuardada = solicitudRepository.save(solicitud);
-    guardarCambioEstado(solicitudGuardada, EstadoSolicitud.BORRADOR);
+    guardarCambioEstado(solicitudGuardada, estadoBorrador);
 
     return solicitudGuardada;
   }
@@ -70,12 +76,21 @@ public class SolicitudService {
 
   /**
    * Obtiene todas las solicitudes con un estado específico.
+   * Nota: Ahora Solicitud NO tiene relación directa a Estado.
+   * El estado se obtiene del último CambioEstado.
+   * Este método es mantenido por compatibilidad pero consultará CambioEstado.
    * 
-   * @param estado Estado a filtrar
+   * @param estado Estado a filtrar (entidad Estado)
    * @return Lista de solicitudes en ese estado
    */
-  public List<Solicitud> obtenerSolicitudesPorEstado(EstadoSolicitud estado) {
-    return solicitudRepository.findByEstado(estado);
+  public List<Solicitud> obtenerSolicitudesPorEstado(Estado estado) {
+    // Buscar todos los CambioEstado con este estado y obtener sus solicitudes
+    var cambios = cambioEstadoRepository.findByEstado(estado);
+    return cambios.stream()
+        .map(CambioEstado::getSolicitud)
+        .filter(java.util.Objects::nonNull)
+        .distinct()
+        .toList();
   }
 
   /**
@@ -94,7 +109,11 @@ public class SolicitudService {
     solicitud.setCostoEstimado(costoEstimado);
     solicitud.setTiempoEstimadoHoras(tiempoEstimadoHoras);
 
-    cambiarEstadoSolicitud(solicitud, EstadoSolicitud.PROGRAMADA);
+    // Obtener el estado PROGRAMADA
+    Estado estadoProgramada = estadoRepository.findByCodigoAndEntidadTipo("PROGRAMADA", "SOLICITUD")
+        .orElseThrow(() -> new IllegalArgumentException("Estado PROGRAMADA no encontrado para SOLICITUD"));
+
+    cambiarEstadoSolicitud(solicitud, estadoProgramada);
 
     return solicitudRepository.save(solicitud);
   }
@@ -106,7 +125,7 @@ public class SolicitudService {
    * @return Lista de cambios de estado ordenados por fecha
    */
   public List<CambioEstado> obtenerHistorialCambios(Long solicitudId) {
-    return cambioEstadoRepository.findBySolicitudIdOrderByFechaCambioAsc(solicitudId);
+    return cambioEstadoRepository.findBySolicitudIdOrderByFechaInicioAsc(solicitudId);
   }
 
   /**
@@ -115,36 +134,41 @@ public class SolicitudService {
    * @param solicitud   Solicitud a actualizar
    * @param nuevoEstado Nuevo estado
    */
-  public void guardarCambioEstado(Solicitud solicitud, EstadoSolicitud nuevoEstado) {
+  public void guardarCambioEstado(Solicitud solicitud, Estado nuevoEstado) {
     cambiarEstadoSolicitud(solicitud, nuevoEstado);
   }
 
   /**
    * Cambia el estado de una solicitud y registra el cambio.
-   * Valida explícitamente que la transición sea permitida según las reglas de
-   * negocio.
+   * Valida que el nuevo estado pertenezca a SOLICITUD.
+   * Cierra el estado anterior (establece fechaFin) y abre el nuevo.
    * 
    * @param solicitud   Solicitud a actualizar
    * @param nuevoEstado Nuevo estado
-   * @throws IllegalStateException Si la transición no es válida
+   * @throws IllegalStateException Si el nuevo estado no es de tipo SOLICITUD
    */
-  private void cambiarEstadoSolicitud(Solicitud solicitud, EstadoSolicitud nuevoEstado) {
-    EstadoSolicitud estadoActual = solicitud.getEstado();
-
-    // Validar que la transición sea permitida
-    if (!EstadoSolicitudValidator.esTransicionValida(estadoActual, nuevoEstado)) {
+  private void cambiarEstadoSolicitud(Solicitud solicitud, Estado nuevoEstado) {
+    // Validar que el nuevo estado sea para SOLICITUD
+    if (!nuevoEstado.getEntidadTipo().equals("SOLICITUD")) {
       throw new IllegalStateException(
-          "Transición de estado no permitida: " + estadoActual + " → " + nuevoEstado +
-              ". Transiciones válidas desde " + estadoActual + ": " +
-              EstadoSolicitudValidator.obtenerTransicionesValidas(estadoActual));
+          "El estado " + nuevoEstado.getCodigo() + " no es aplicable a SOLICITUD");
     }
 
-    solicitud.setEstado(nuevoEstado);
+    // Cerrar el estado anterior (si existe) estableciendo fechaFin
+    cambioEstadoRepository.findBySolicitudIdOrderByFechaInicioAsc(solicitud.getId())
+        .stream()
+        .filter(cambio -> cambio.getFechaFin() == null) // Estado actual (activo)
+        .forEach(cambioActivo -> {
+          cambioActivo.setFechaFin(LocalDateTime.now());
+          cambioEstadoRepository.save(cambioActivo);
+        });
 
+    // Crear el nuevo estado (fechaFin = null indica que es el estado actual)
     CambioEstado cambio = CambioEstado.builder()
         .solicitud(solicitud)
         .estado(nuevoEstado)
-        .fechaCambio(LocalDateTime.now())
+        .fechaInicio(LocalDateTime.now())
+        .fechaFin(null) // null = estado actual
         .build();
 
     cambioEstadoRepository.save(cambio);
@@ -165,7 +189,11 @@ public class SolicitudService {
     solicitud.setCostoFinal(costoFinal);
     solicitud.setTiempoRealHoras(tiempoRealHoras);
 
-    cambiarEstadoSolicitud(solicitud, EstadoSolicitud.ENTREGADA);
+    // Obtener el estado ENTREGADA
+    Estado estadoEntregada = estadoRepository.findByCodigoAndEntidadTipo("ENTREGADA", "SOLICITUD")
+        .orElseThrow(() -> new IllegalArgumentException("Estado ENTREGADA no encontrado para SOLICITUD"));
+
+    cambiarEstadoSolicitud(solicitud, estadoEntregada);
 
     return solicitudRepository.save(solicitud);
   }

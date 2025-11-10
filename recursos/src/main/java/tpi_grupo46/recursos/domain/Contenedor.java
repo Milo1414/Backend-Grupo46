@@ -39,7 +39,7 @@ public class Contenedor implements Serializable {
     private BigDecimal volumen;
 
     @Column(name = "id_estado_contenedor")
-    private Integer idEstadoContenedor;
+    private Integer idEstadoContenedor; // ID del estado del contenedor
 
     @Column(name = "cliente_asociado")
     private String clienteAsociado;
