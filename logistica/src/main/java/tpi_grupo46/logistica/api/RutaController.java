@@ -17,7 +17,7 @@ import tpi_grupo46.logistica.dto.ruta.CrearRutaDTO;
 import tpi_grupo46.logistica.dto.ruta.RutaDTO;
 import tpi_grupo46.logistica.dto.tramo.CrearTramoDTO;
 import tpi_grupo46.logistica.exception.ErrorResponse;
-import tpi_grupo46.logistica.mapper.LogisticaMapper;
+import tpi_grupo46.logistica.infrastructure.mapper.LogisticaMapper;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,6 @@
-package tpi_grupo46.logistica.mapper;
+package tpi_grupo46.logistica.infrastructure.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import tpi_grupo46.logistica.domain.model.Solicitud;
 import tpi_grupo46.logistica.domain.model.Ruta;
 import tpi_grupo46.logistica.domain.model.Tramo;
@@ -12,10 +11,12 @@ import tpi_grupo46.logistica.dto.tramo.TramoDTO;
 import tpi_grupo46.logistica.dto.cambioestado.CambioEstadoDTO;
 
 /**
- * Mapper para convertir entre entidades y DTOs usando MapStruct.
+ * Mapper de infraestructura que realiza la conversión entre
+ * entidades del dominio y DTOs de la capa API.
+ * Utiliza MapStruct para simplificar el mapeo.
+ * 
  * Centraliza la lógica de transformación entre la capa de dominio y la capa de
- * presentación,
- * asegurando consistencia en el mapeo de datos.
+ * presentación, asegurando consistencia en el mapeo de datos.
  */
 @Mapper(componentModel = "spring")
 public interface LogisticaMapper {

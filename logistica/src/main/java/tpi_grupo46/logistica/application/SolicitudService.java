@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
 import tpi_grupo46.logistica.domain.model.CambioEstado;
 import tpi_grupo46.logistica.domain.model.Solicitud;
-import tpi_grupo46.logistica.domain.util.EstadoSolicitudValidator;
+import tpi_grupo46.logistica.domain.service.EstadoSolicitudValidator;
 import tpi_grupo46.logistica.infrastructure.repository.CambioEstadoRepository;
 import tpi_grupo46.logistica.infrastructure.repository.SolicitudRepository;
 

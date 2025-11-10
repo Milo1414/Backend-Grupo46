@@ -16,7 +16,7 @@ import tpi_grupo46.logistica.domain.enums.EstadoSolicitud;
 import tpi_grupo46.logistica.dto.solicitud.*;
 import tpi_grupo46.logistica.dto.cambioestado.CambioEstadoDTO;
 import tpi_grupo46.logistica.exception.ErrorResponse;
-import tpi_grupo46.logistica.mapper.LogisticaMapper;
+import tpi_grupo46.logistica.infrastructure.mapper.LogisticaMapper;
 import tpi_grupo46.logistica.infrastructure.repository.SolicitudRepository;
 
 import java.util.List;

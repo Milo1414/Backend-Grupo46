@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import tpi_grupo46.logistica.application.TramoService;
 import tpi_grupo46.logistica.dto.tramo.*;
 import tpi_grupo46.logistica.exception.ErrorResponse;
-import tpi_grupo46.logistica.mapper.LogisticaMapper;
+import tpi_grupo46.logistica.infrastructure.mapper.LogisticaMapper;
 import tpi_grupo46.logistica.infrastructure.repository.TramoRepository;
 
 import java.util.List;
