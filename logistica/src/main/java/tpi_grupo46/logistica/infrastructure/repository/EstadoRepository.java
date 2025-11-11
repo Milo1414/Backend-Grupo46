@@ -29,7 +29,6 @@ public interface EstadoRepository extends JpaRepository<Estado, Long> {
      * @param activo      si está activo
      * @return lista de estados activos
      */
-    List<Estado> findByEntidadTipoAndActivo(String entidadTipo, Boolean activo);
 
     /**
      * Obtiene un estado específico por código y tipo de entidad.
