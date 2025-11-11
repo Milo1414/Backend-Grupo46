@@ -575,7 +575,219 @@ Load Tests (JMeter/Gatling)
 
 ---
 
-## 11. Conclusiones
+## 11. Alineación con Modelo de Capas de la Cátedra (Etapa 2)
+
+### 11.1 Reorganización de la Estructura Interna
+
+En esta segunda etapa, se alineó completamente la estructura interna del microservicio con el modelo de capas definido por la cátedra de Backend de Aplicaciones:
+
+#### Cambios Realizados
+
+**1. Validadores de Dominio (Domain Layer)**
+
+```
+ANTES:  domain/util/EstadoSolicitudValidator.java
+AHORA:  domain/service/EstadoSolicitudValidator.java
+```
+
+**Justificación:** Los validadores de transiciones de estado son servicios de dominio que encapsulan reglas de negocio puras, no utilidades técnicas. Pertenecen a `domain/service` junto con otras reglas de negocio.
+
+**JavaDoc Asociado:**
+```java
+/**
+ * Servicio de dominio responsable de validar las transiciones
+ * de estado permitidas entre instancias de Solicitud.
+ *
+ * Forma parte de la capa de dominio y define las reglas del negocio
+ * asociadas al ciclo de vida de una solicitud.
+ */
+```
+
+---
+
+**2. Mappers de MapStruct (Infrastructure Layer)**
+
+```
+ANTES:  mapper/LogisticaMapper.java
+AHORA:  infrastructure/mapper/LogisticaMapper.java
+```
+
+**Justificación:** Los mappers son artefactos técnicos que facilitan la transformación entre entidades y DTOs. Representan una decisión arquitectónica (usar MapStruct), no lógica de negocio, por lo que pertenecen a infraestructura.
+
+**Beneficio:** Separa claramente qué es "técnica" (infraestructura) de qué es "negocio" (dominio/aplicación).
+
+**JavaDoc Asociado:**
+```java
+/**
+ * Mapper de infraestructura que realiza la conversión entre
+ * entidades del dominio y DTOs de la capa API.
+ * Utiliza MapStruct para simplificar el mapeo.
+ */
+```
+
+---
+
+**3. Integraciones Externas (Infrastructure Layer)**
+
+```
+NUEVO:  infrastructure/external/GoogleMapsClient.java
+```
+
+**Justificación:** Las llamadas a servicios externos (Google Maps, APIs de terceros, etc.) son detalles técnicos. Encapsularlos en infraestructura mantiene:
+- Bajo acoplamiento con capas superiores
+- Fácil cambio de proveedor externo
+- Punto único de entrada para estas integraciones
+
+**Estructura:**
+```
+infrastructure/external/
+├── GoogleMapsClient.java      (Google Maps Directions API)
+└── [Otros clientes externos]
+```
+
+**JavaDoc Asociado:**
+```java
+/**
+ * Cliente de infraestructura encargado de la comunicación
+ * con el servicio externo Google Maps Directions API.
+ * 
+ * Encapsula las llamadas HTTP y abstrae los detalles de conexión,
+ * manteniendo bajo acoplamiento con la capa de aplicación.
+ */
+```
+
+---
+
+### 11.2 Estructura Final Alineada con la Cátedra
+
+```
+tpi_grupo46/logistica/
+│
+├── api/                          ← PRESENTACIÓN
+│   ├── SolicitudController.java
+│   ├── RutaController.java
+│   ├── TramoController.java
+│   └── CambioEstadoController.java
+│
+├── application/                  ← APLICACIÓN (Services)
+│   ├── SolicitudService.java
+│   ├── RutaService.java
+│   └── TramoService.java
+│
+├── domain/                       ← DOMINIO (Reglas de Negocio)
+│   ├── model/                    (Entidades JPA)
+│   ├── enums/                    (Enumeraciones)
+│   └── service/                  ← NUEVO: Validadores/Servicios de Dominio
+│       └── EstadoSolicitudValidator.java  (MOVIDO aquí)
+│
+├── infrastructure/               ← INFRAESTRUCTURA (Técnica)
+│   ├── repository/               (Acceso a datos)
+│   ├── mapper/                   ← NUEVO: Mappers MapStruct
+│   │   └── LogisticaMapper.java  (MOVIDO aquí)
+│   ├── config/                   (Configuración Spring)
+│   ├── external/                 ← NUEVO: Integraciones externas
+│   │   └── GoogleMapsClient.java (NUEVO)
+│   └── client/                   (Feign clients para otros microservicios)
+│
+├── dto/                          ← DTOs (Presentación)
+│   ├── solicitud/
+│   ├── ruta/
+│   ├── tramo/
+│   └── cambioestado/
+│
+├── exception/                    ← Manejo de excepciones
+│   └── GlobalExceptionHandler.java
+│
+└── LogisticaApplication.java    ← Entry Point
+```
+
+---
+
+### 11.3 Principios SOLID Aplicados
+
+#### S - Single Responsibility Principle
+✅ Cada clase tiene una única razón para cambiar:
+- `EstadoSolicitudValidator`: Solo valida transiciones (DOMINIO)
+- `LogisticaMapper`: Solo mapea entidades a DTOs (INFRAESTRUCTURA)
+- `GoogleMapsClient`: Solo comunica con Google Maps (INFRAESTRUCTURA)
+
+#### O - Open/Closed Principle
+✅ Abierto a extensión, cerrado a modificación:
+- Si cambia el proveedor de mapas, solo cambia `GoogleMapsClient`
+- Si se agrega un nuevo mapper, se extiende la interfaz sin tocar la existente
+
+#### L - Liskov Substitution Principle
+✅ Las implementaciones pueden sustituirse sin quebrar el código:
+- Los mappers (MapStruct) pueden reemplazarse con manuales sin afectar los servicios
+
+#### I - Interface Segregation Principle
+✅ Los clientes no dependen de interfaces innecesarias:
+- Controllers solo inyectan lo que necesitan
+- Services solo llaman a repositorios e infraestructura que usan
+
+#### D - Dependency Inversion Principle
+✅ Dependemos de abstracciones, no de concreciones:
+- Services dependen de Repository (interfaz), no de implementaciones
+- Controllers dependen de Service (interfaz)
+
+---
+
+### 11.4 Desacoplamiento por Capas
+
+```
+API (Controllers)
+  ↓ DTOs
+Application (Services) ← Lógica de negocio
+  ↓ Entidades
+Domain (Validadores/Rules) ← Reglas de negocio puro
+  ↓
+Infrastructure
+  ├─ Repositories (DB)
+  ├─ Mappers (MapStruct)
+  ├─ Clients (Google Maps, ms-recursos)
+  └─ Config (Spring Security, etc.)
+```
+
+**Beneficio:** Cada capa es independiente:
+- Cambiar PostgreSQL por MongoDB: Afecta solo `infrastructure/repository`
+- Cambiar MapStruct por manuales: Afecta solo `infrastructure/mapper`
+- Cambiar Google Maps por otro proveedor: Afecta solo `infrastructure/external`
+
+---
+
+### 11.5 Imports Actualizados
+
+Todos los imports fueron refactorizados para reflejar la nueva ubicación:
+
+**En `SolicitudService.java`:**
+```java
+// ANTES
+import tpi_grupo46.logistica.domain.util.EstadoSolicitudValidator;
+
+// AHORA
+import tpi_grupo46.logistica.domain.service.EstadoSolicitudValidator;
+```
+
+**En todos los Controllers:**
+```java
+// ANTES
+import tpi_grupo46.logistica.mapper.LogisticaMapper;
+
+// AHORA
+import tpi_grupo46.logistica.infrastructure.mapper.LogisticaMapper;
+```
+
+---
+
+### 11.6 Documentación Complementaria
+
+Se agregó documentación adicional:
+- **`README_DB_CONFIG.md`**: Explica la configuración de schemas PostgreSQL compartidos
+- **Estructura de capas validada** en este documento
+
+---
+
+## 12. Conclusiones
 
 ### Decisiones Validadas
 
@@ -587,6 +799,8 @@ Load Tests (JMeter/Gatling)
 ✅ **Spring Boot 3.5.7:** Ecosistema maduro  
 ✅ **REST conventions:** Estándar de industria  
 ✅ **Enum para estados:** Type-safety  
+✅ **Alineación con cátedra:** Validadores en dominio, mappers en infraestructura  
+✅ **Integraciones externas encapsuladas:** GoogleMapsClient en infraestructura  
 
 ### Próximos Pasos Críticos
 

@@ -12,17 +12,17 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "google.maps")
 @Data
 public class GoogleMapsConfig {
-    
+
     /**
      * API Key de Google Maps
      */
     private String apiKey;
-    
+
     /**
      * URL base de Distance Matrix API
      */
     private String distanceMatrixUrl;
-    
+
     /**
      * Timeout en milisegundos para las peticiones HTTP
      */

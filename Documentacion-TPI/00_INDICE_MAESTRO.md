@@ -1,8 +1,8 @@
-# 📑 ÍNDICE MAESTRO - Documentación Etapa 2 Completada ✅
+# 📑 ÍNDICE MAESTRO - Documentación Etapa 3 Completada ✅
 
 **Proyecto**: TPI Grupo 46 - Microservicio ms-logistica  
-**Versión**: 2.0  
-**Fecha**: 6 de noviembre de 2025  
+**Versión**: 3.0  
+**Fecha**: 7 de noviembre de 2025  
 **Estado**: ✅ **100% COMPLETADO**
 
 ---
@@ -11,249 +11,130 @@
 
 ### Si tienes 5 minutos ⏱️
 ```
-Lee: SUMARIO_VISUAL.md
+Lee: SUMARIO_VISUAL.md O ETAPA3_COMPLETADA.md (resumen)
 Acción: Comprenderás visualmente todos los cambios
 ```
 
 ### Si tienes 15 minutos ⏱️
 ```
-Lee: RESUMEN_PARA_PROFESORES.md
-Acción: Tendrás visión ejecutiva completa
+Lee: ETAPA3_COMPLETADA.md
+Acción: Tendrás visión ejecutiva de Etapa 3
 ```
 
 ### Si tienes 30 minutos ⏱️
 ```
 Lee en orden:
-1. REFACTORING_SEGUNDA_ETAPA_COMPLETADA.md
-2. GUIA_NUEVOS_ENDPOINTS.md
-Acción: Comprenderás técnica y ejemplos
+1. ETAPA3_COMPLETADA.md (resumen ejecutivo)
+2. CAMBIOS_ETAPA3_ALINEACION_CAPAS.md (detalles técnicos)
+Acción: Comprenderás restructuración de capas
 ```
 
 ### Si tienes 60 minutos ⏱️
 ```
 Lee en orden:
-1. REFACTORING_SEGUNDA_ETAPA_COMPLETADA.md
-2. GUIA_NUEVOS_ENDPOINTS.md
-3. MANUAL_VALIDACION_EJECUCION.md
-Acción: Podrás ejecutar y validar el proyecto
+1. ETAPA3_COMPLETADA.md (resumen)
+2. CAMBIOS_ETAPA3_ALINEACION_CAPAS.md (detalles)
+3. README_DB_CONFIG.md (configuración BD)
+Acción: Entenderás arquitectura completa
 ```
 
 ### Si tienes 2+ horas ⏱️
 ```
-Lee toda la documentación disponible
+Lee toda la documentación disponible (Etapa 2 + 3)
 (Ver lista completa abajo)
 Acción: Serás experto en el proyecto
 ```
 
 ---
 
-## 📚 DOCUMENTACIÓN GENERADA EN ETAPA 2 (NUEVOS)
+## 📚 DOCUMENTACIÓN GENERADA EN ETAPA 3 (NUEVOS)
 
-### 1. REFACTORING_SEGUNDA_ETAPA_COMPLETADA.md
-**Tamaño**: ~400 líneas | **Tiempo**: 15-20 min | **Público**: Todos
+### 1. ETAPA3_COMPLETADA.md
+**Tamaño**: ~300 líneas | **Tiempo**: 15-20 min | **Público**: Todos
 
 **Qué contiene:**
-- Resumen ejecutivo de 4 tareas completadas
-- Tarea 5: REST semántico (endpoints refactorizados)
-- Tarea 6: Validación de transiciones (EstadoSolicitudValidator)
-- Tarea 7: Configuración YAML (application.yml)
-- Tarea 8: JavaDoc completo (100% cobertura)
-- Validación final y estadísticas
-- Próximos pasos para Etapa 3
+- Resumen ejecutivo de Etapa 3
+- Cambios principales realizados
+- Análisis de cambios
+- Estructura final validada
+- Métricas y validación
+- Justificación técnica
+- Próximos pasos
 
 **Usar para:**
-- Entender qué se cambió
-- Aprender sobre cada tarea
-- Presentar a profesor/cliente
+- Entender qué fue Etapa 3
+- Visión general de restructuración
+- Validar completitud
 
-**Ubicación**: `/logistica/REFACTORING_SEGUNDA_ETAPA_COMPLETADA.md`
+**Ubicación**: `/Documentacion-TPI/ETAPA3_COMPLETADA.md`
 
 ---
 
-### 2. GUIA_NUEVOS_ENDPOINTS.md
-**Tamaño**: ~450 líneas | **Tiempo**: 25-30 min | **Público**: Desarrolladores
+### 2. CAMBIOS_ETAPA3_ALINEACION_CAPAS.md
+**Tamaño**: ~500 líneas | **Tiempo**: 25-30 min | **Público**: Desarrolladores/Académicos
 
 **Qué contiene:**
-- Filosofía REST (cambios principales)
-- Endpoints de Solicitudes (7 operations con ejemplos)
-- Endpoints de Tramos (6 operations con ejemplos)
-- Validación de transiciones (flujos permitidos)
-- 20+ ejemplos cURL completos
-- Tabla antes/después
-- Guía de migración de código legado
-- Troubleshooting común
-
-**Usar para:**
-- Consumir la API
-- Migrar código existente
-- Entender ejemplos de requests/responses
-
-**Ubicación**: `/logistica/GUIA_NUEVOS_ENDPOINTS.md`
-
----
-
-### 3. MANUAL_VALIDACION_EJECUCION.md
-**Tamaño**: ~400 líneas | **Tiempo**: 20-25 min | **Público**: Desarrolladores/QA
-
-**Qué contiene:**
-- Requisitos previos (soft y hardware)
-- Verificación de build (3 opciones)
-- Ejecución local (2 opciones)
-- Validación de endpoints
-- 4 pruebas funcionales completas
-- Checklist de implementación
-- Script PowerShell de verificación
-- Troubleshooting detallado
-
-**Usar para:**
-- Compilar el proyecto
-- Ejecutar localmente
-- Validar que todo funciona
-- Resolver problemas
-
-**Ubicación**: `/logistica/MANUAL_VALIDACION_EJECUCION.md`
-
----
-
-### 4. RESUMEN_PARA_PROFESORES.md
-**Tamaño**: ~400 líneas | **Tiempo**: 20 min | **Público**: Profesores/Evaluadores
-
-**Qué contiene:**
-- Resumen de trabajos realizados (Tareas 5-8)
-- Problema → Solución para cada tarea
-- Características implementadas
-- Alineación con requisitos
-- Decisiones de diseño
-- Métricas de calidad
-- Cómo validar cambios
-- Conclusiones
-- Próximas etapas sugeridas
-
-**Usar para:**
-- Presentar a profesor
-- Justificar decisiones
-- Demostrar cumplimiento de requisitos
-
-**Ubicación**: `/logistica/RESUMEN_PARA_PROFESORES.md`
-
----
-
-### 5. CAMBIOS_ETAPA2.md
-**Tamaño**: ~300 líneas | **Tiempo**: 15 min | **Público**: Code Review
-
-**Qué contiene:**
-- Resumen de cambios (+200 líneas de código)
-- 3 archivos creados (2 código + documentación)
-- 5 archivos modificados (detailed)
-- Análisis por tipo de cambio
-- Detalle de cambios por archivo (diff style)
-- Validaciones completadas
-- Cómo aplicar los cambios (3 opciones)
-- Checklist de revisión
-- Impacto en cada stakeholder
-
-**Usar para:**
-- Code review formal
-- Entender qué se modificó
-- Preparar commits
-
-**Ubicación**: `/logistica/CAMBIOS_ETAPA2.md`
-
----
-
-### 6. INDICE_DOCUMENTACION_v2.md
-**Tamaño**: ~350 líneas | **Tiempo**: 10 min | **Público**: Todos
-
-**Qué contiene:**
-- Guía de lectura recomendada (por tiempo disponible)
-- Documentación por tema (Etapa 1 + 2)
-- Documentos por caso de uso (5 escenarios)
-- Rutas de aprendizaje (4 perfiles)
-- Estadísticas de documentación
-- Checklist de documentación
-- Enlaces útiles
-- Tabla de comandos frecuentes
-
-**Usar para:**
-- Navegar la documentación
-- Encontrar lo que necesitas rápido
-- Entender estructura de docs
-
-**Ubicación**: `/logistica/INDICE_DOCUMENTACION_v2.md`
-
----
-
-### 7. CONFIRMACION_FINALIZACION.md
-**Tamaño**: ~450 líneas | **Tiempo**: 20 min | **Público**: Todos
-
-**Qué contiene:**
-- Checklist final de Tareas 5-8 (todas ✅)
-- Verificación técnica completa
-- Documentación generada (cantidad y cobertura)
-- Arquitectura verificada (capas, patrones, SOLID)
-- Pruebas realizadas (10/10 exitosas)
-- Métricas de calidad
-- Alineación con requisitos
-- Estado de deployabilidad
-- Deliverables entregados
-
-**Usar para:**
-- Confirmar que todo está hecho
-- Presentación de finalización
-- Documentar progreso
-
-**Ubicación**: `/logistica/CONFIRMACION_FINALIZACION.md`
-
----
-
-### 8. SUMARIO_VISUAL.md
-**Tamaño**: ~300 líneas | **Tiempo**: 10-15 min | **Público**: Todos
-
-**Qué contiene:**
-- Visualización ASCII de objetivos alcanzados
-- Tabla de cambios de endpoints
-- Máquina de estados (diagrama)
-- Arquitectura por capas (visual)
-- Comparación YAML vs Properties
-- Validador de transiciones (código)
-- Estadísticas (tabla)
+- 5 cambios principales documentados
+- Justificación de cada cambio
+- Cambios realizados en detalle
+- Impacto de cada modificación
+- Estructura final validada
 - Checklist de validación
-- Flowchart de flujo completo
-- Matriz de decisiones
-- Ventajas logradas
-- Quick reference
+- Análisis de cambios
+- Principios SOLID aplicados
+- Lecciones aprendidas
 
 **Usar para:**
-- Entendimiento visual rápido
-- Presentaciones/diapositivas
-- Impresión en papel
+- Entender por qué se movieron las clases
+- Aprender sobre arquitectura en capas
+- Presentación académica
+- Code review
 
-**Ubicación**: `/logistica/SUMARIO_VISUAL.md`
+**Ubicación**: `/Documentacion-TPI/CAMBIOS_ETAPA3_ALINEACION_CAPAS.md`
 
 ---
 
-## 📖 DOCUMENTACIÓN PRE-EXISTENTE (Etapa 1)
+### 3. README_DB_CONFIG.md
+**Tamaño**: ~400 líneas | **Tiempo**: 20-25 min | **Público**: Desarrolladores/DBA
+
+**Qué contiene:**
+- Arquitectura de BD compartida
+- Cómo crear esquemas PostgreSQL
+- Configuración JDBC y Hibernate
+- Permisos por usuario
+- Migraciones con Flyway
+- Validación de configuración
+- Comunicación entre microservicios
+- Monitoreo y mantenimiento
+- Seguridad y buenas prácticas
+- Configuración por ambiente
+
+**Usar para:**
+- Configurar base de datos inicial
+- Crear backups
+- Entender esquemas compartidos
+- Referencia de seguridad
+
+**Ubicación**: `/logistica/README_DB_CONFIG.md`
+
+---
+
+## � DOCUMENTACIÓN PRE-EXISTENTE (Etapa 2)
 
 Estos documentos siguen siendo válidos y complementan la información:
 
-| Documento | Propósito | Relevancia |
-|-----------|-----------|-----------|
-| **QUICKSTART.md** | Setup inicial | ✅ Aún válido |
-| **ARBOL_ESTRUCTURA.md** | Estructura carpetas | ✅ Aún válido |
-| **ENTIDADES_LOGISTICA.md** | Modelos de dominio | ✅ Aún válido |
-| **ARQUITECTURA_DECISIONES.md** | ADRs técnicos | ✅ Actualizado con Etapa 2 |
-| **DIAGRAMAS_ARQUITECTURA.md** | Diagramas | ✅ Aún válido |
-| **IMPLEMENTACION_COMPLETADA.md** | Etapa 1 details | ✅ Referencia histórica |
-| **API_REST_COMPLETADA.md** | Especificación OpenAPI | ✅ Actualizado |
-| **API_GUIA_RAPIDA.md** | Quick reference | ✅ Aún válido |
-| **REFACTORING_PROGRESS.md** | Progreso general | ✅ Actualizado |
-| **RESUMEN_API_COMPLETADA.md** | Resumen API | ✅ Aún válido |
-| **RESUMEN_CREACION.md** | Histórico | ✅ Referencia |
-| **INDICE_DOCUMENTACION.md** | Índice v1 | ℹ️ Ver v2 |
+| Documento | Etapa | Propósito | Relevancia |
+|-----------|-------|----------|-----------|
+| **SUMARIO_VISUAL.md** | 2 | Visual overview | ✅ Aún válido |
+| **RESUMEN_PARA_PROFESORES.md** | 2 | Ejecutivo | ✅ Aún válido |
+| **REFACTORING_SEGUNDA_ETAPA_COMPLETADA.md** | 2 | Detalles técnicos | ✅ Aún válido |
+| **GUIA_NUEVOS_ENDPOINTS.md** | 2 | API examples | ✅ Aún válido |
+| **MANUAL_VALIDACION_EJECUCION.md** | 2 | Ejecución | ✅ Aún válido |
+| **CAMBIOS_ETAPA2.md** | 2 | Code review | ✅ Histórico |
 
 ---
 
-## 🎓 RUTAS DE LECTURA RECOMENDADAS
+## 🎓 RUTAS DE LECTURA RECOMENDADAS (actualizado Etapa 3)
 
 ### Ruta 1: Estudiante (Primera vez)
 ```
