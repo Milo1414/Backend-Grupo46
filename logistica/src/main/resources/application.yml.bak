@@ -3,25 +3,21 @@ spring:
     name: logistica
   
   datasource:
-    url: jdbc:postgresql://aws-1-sa-east-1.pooler.supabase.com:5432/postgres
-    username: postgres.jvxofmobzjyhfxhivxrl
-    password: milocatameli
+    url: jdbc:postgresql://localhost:5432/logistica_db
+    username: postgres
+    password: 'milocatameli'
     driver-class-name: org.postgresql.Driver
     hikari:
       data-source-properties:
         assumeMinServerVersion: '9.0'
-      maximum-pool-size: 10
-      connection-timeout: 30000
-    # Deshabilitar scripts SQL automáticos para Supabase
-    initialization-mode: never
   
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: false
     properties:
       hibernate:
-        # dialect: org.hibernate.dialect.PostgreSQLDialect  # Auto-seleccionado por Hibernate
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
 server:
