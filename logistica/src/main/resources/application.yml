@@ -24,6 +24,10 @@ spring:
         # dialect: org.hibernate.dialect.PostgreSQLDialect  # Auto-seleccionado por Hibernate
         format_sql: true
 
+google:
+  maps:
+    apikey: AIzaSyCtOQP2BTfr-E0k6QsZx5boR1U2_iZlvzM
+
 server:
   port: 8081
 
