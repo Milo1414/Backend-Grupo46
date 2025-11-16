@@ -41,11 +41,11 @@ public class TramoService {
    * Asigna un camión a un tramo y cambia su estado a ASIGNADO.
    * 
    * @param tramoId  ID del tramo
-   * @param camionId ID del camión a asignar
+   * @param camionId ID del camión a asignar (dominio/patente)
    * @return Tramo actualizado
    * @throws IllegalArgumentException Si el tramo no existe
    */
-  public Tramo asignarCamion(Long tramoId, Long camionId) {
+  public Tramo asignarCamion(Long tramoId, String camionId) {
     Tramo tramo = tramoRepository.findById(tramoId)
         .orElseThrow(() -> new IllegalArgumentException("Tramo no encontrado: " + tramoId));
 
@@ -107,10 +107,10 @@ public class TramoService {
   /**
    * Obtiene todos los tramos asignados a un camión específico.
    *
-   * @param camionId ID del camión
+   * @param camionId ID del camión (dominio/patente)
    * @return Lista de tramos asignados al camión
    */
-  public List<Tramo> obtenerTramosPorCamion(Long camionId) {
+  public List<Tramo> obtenerTramosPorCamion(String camionId) {
     return tramoRepository.findByCamionId(camionId);
   }
 

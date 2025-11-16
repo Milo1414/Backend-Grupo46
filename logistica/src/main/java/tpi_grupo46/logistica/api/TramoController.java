@@ -72,14 +72,14 @@ public class TramoController {
   /**
    * Obtiene todos los tramos asignados a un camión.
    *
-   * @param camionId ID del camión
+   * @param camionId ID del camión (dominio/patente)
    * @return Lista de TramoDTO
    */
   @GetMapping("/camion/{camionId}")
   @Operation(summary = "Obtener tramos por camión", description = "Recupera todos los tramos asignados a un camión específico")
   @ApiResponse(responseCode = "200", description = "Tramos encontrados", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TramoDTO.class)))
   public ResponseEntity<List<TramoDTO>> obtenerTramosPorCamion(
-      @PathVariable @Parameter(description = "ID del camión", example = "1") Long camionId) {
+      @PathVariable @Parameter(description = "ID del camión (dominio/patente)", example = "ABC-123") String camionId) {
     var tramos = tramoRepository.findByCamionId(camionId);
     return ResponseEntity.ok(tramos.stream()
         .map(mapper::tramoToDto)

@@ -65,7 +65,7 @@ public class Tramo implements Serializable {
     private LocalDateTime fechaHoraFinReal;
 
     @Column(name = "camion_id")
-    private Long camionId; // Referencia al camión asignado (ms-recursos)
+    private String camionId; // Referencia al camión asignado (ms-recursos) - dominio/patente
 
     @ManyToOne
     @JoinColumn(name = "ruta_id", nullable = false)

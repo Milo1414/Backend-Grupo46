@@ -8,5 +8,5 @@ import jakarta.validation.constraints.Positive;
  * Contiene el ID del camión que transportará este segmento.
  */
 public record AsignarCamionDTO(
-    @NotNull(message = "camionId es requerido") @Positive(message = "camionId debe ser un número positivo") Long camionId) {
+    @NotNull(message = "camionId es requerido") String camionId) {
 }

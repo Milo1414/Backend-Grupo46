@@ -20,5 +20,5 @@ public interface TramoRepository extends JpaRepository<Tramo, Long> {
     /**
      * Busca todos los tramos asignados a un camión
      */
-    List<Tramo> findByCamionId(Long camionId);
+    List<Tramo> findByCamionId(String camionId);
 }

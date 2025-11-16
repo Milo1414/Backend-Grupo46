@@ -1,0 +1,72 @@
+-- ============================================================================
+-- FIX: Schema Validation Error - Wrong Column Type for camion_id
+-- ============================================================================
+-- 
+-- PROBLEMA:
+--   La columna camion_id en la tabla TRAMO estaba configurada como VARCHAR
+--   pero la entidad Java esperaba BIGINT, causando que Hibernate no pudiera
+--   validar el schema al arrancar la aplicación.
+--
+-- CAUSA:
+--   Mismatch entre el tipo de dato en la base de datos y la anotación JPA
+--   en la clase Camion (@Id private String dominioCamion) que es la FK que
+--   referencia TRAMO.camion_id
+--
+-- SOLUCIÓN APLICADA:
+--   Cambiar el tipo de camion_id de BIGINT a VARCHAR en la tabla TRAMO
+--   para alinearse con:
+--   - El tipo VARCHAR en la base de datos
+--   - El dominio de Camion (que usa String dominioCamion como PK)
+--   - La relación lógica: camion_id referencia al dominio del camión (patente)
+--
+-- ============================================================================
+
+-- Alterar el tipo de columna en PostgreSQL
+ALTER TABLE tramo
+ALTER COLUMN camion_id TYPE VARCHAR;
+
+-- Si necesitas ejecutar esto en otra BD (MySQL):
+-- ALTER TABLE tramo MODIFY COLUMN camion_id VARCHAR(255);
+
+-- Si necesitas ejecutar esto en SQL Server:
+-- ALTER TABLE tramo ALTER COLUMN camion_id VARCHAR(255);
+
+-- ============================================================================
+-- CAMBIOS DE CÓDIGO JAVA APLICADOS:
+-- ============================================================================
+-- 
+-- 1. Tramo.java:
+--    Cambió de: private Long camionId;
+--    Cambió a: private String camionId;
+--
+-- 2. TramoDTO.java:
+--    Cambió de: Long camionId
+--    Cambió a: String camionId
+--
+-- 3. AsignarCamionDTO.java:
+--    Cambió de: Long camionId (con @Positive)
+--    Cambió a: String camionId (sin validación de número positivo)
+--
+-- 4. TramoRepository.java:
+--    Cambió de: List<Tramo> findByCamionId(Long camionId);
+--    Cambió a: List<Tramo> findByCamionId(String camionId);
+--
+-- 5. TramoService.java:
+--    - Cambió asignarCamion(Long tramoId, Long camionId) 
+--      a: asignarCamion(Long tramoId, String camionId)
+--    - Cambió obtenerTramosPorCamion(Long camionId)
+--      a: obtenerTramosPorCamion(String camionId)
+--
+-- 6. TramoController.java:
+--    - Cambió parámetro de obtenerTramosPorCamion de Long a String
+--
+-- ============================================================================
+-- RESULTADO:
+-- ============================================================================
+--
+-- ✅ Hibernate podrá validar el schema correctamente
+-- ✅ La aplicación arrancará sin errores de schema validation
+-- ✅ Los camionId ahora tienen el tipo correcto en todas partes (String/patente)
+-- ✅ Las relaciones entre módulos (logistica ↔ recursos) son ahora consistentes
+--
+-- ============================================================================

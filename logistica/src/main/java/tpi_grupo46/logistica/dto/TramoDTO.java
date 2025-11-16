@@ -18,5 +18,5 @@ public record TramoDTO(
         Double tiempoEstimadoHoras,
         LocalDateTime fechaHoraInicioReal,
         LocalDateTime fechaHoraFinReal,
-        Long camionId
+        String camionId
 ) {}
